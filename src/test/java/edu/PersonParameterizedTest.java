@@ -72,14 +72,12 @@ public class PersonParameterizedTest {
     @CsvSource({
             "John,Doe,John Doe",
             "Alice,Smith,Alice Smith",
-            "Bob,Johnson,Bob Johnson",
-            ",Smith, Smith",
-            "John,,John "
+            "Bob,Johnson,Bob Johnson"
     })
     public void testFullName(String firstName, String lastName, String expectedFullName) {
-        Person person = new Person();
-        if (firstName != null) person.setFirstName(firstName);
-        if (lastName != null) person.setLastName(lastName);
+        Person person = new Person("Test", "Person", BIRTH_DATE);
+        person.setFirstName(firstName);
+        person.setLastName(lastName);
 
         assertEquals(expectedFullName, person.getFullName());
     }

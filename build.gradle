@@ -39,18 +39,17 @@ dependencies {
 
     implementation('org.projectlombok:lombok:1.18.36')
 
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
-    testImplementation 'org.junit.platform:junit-platform-suite-api:1.10.2'
-    testImplementation 'org.junit.platform:junit-platform-suite-engine:1.10.2'
-    testImplementation 'org.junit.platform:junit-platform-suite:1.10.2'  // Neu hinzugefügt
-
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-
-    testImplementation('org.junit.jupiter:junit-jupiter-api:5.10.0')
-    testImplementation('org.junit.jupiter:junit-jupiter-engine:5.10.0')
-    testImplementation('org.junit.jupiter:junit-jupiter:5.10.0')
-    testImplementation('org.junit.platform:junit-platform-suite-api:5.10.0')
-    testImplementation('org.mockito:mockito-junit-jupiter:5.16.0')
+    // JUnit Jupiter dependencies
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
+    
+    // JUnit Platform dependencies for suite support
+    testImplementation 'org.junit.platform:junit-platform-suite-api:1.11.4'
+    testImplementation 'org.junit.platform:junit-platform-suite-engine:1.11.4'
+    
+    // Mockito for mocking in tests
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.16.0'
 }
 
 test {

@@ -7,6 +7,7 @@
 ./gradlew test --tests "edu.PersonTest"             # Run specific test class
 ./gradlew test --tests "edu.PersonTest.testGetAge"  # Run specific test method
 ./gradlew test --tests "edu.PersonTestSuite"        # Run test suite
+./gradlew compileTestJava  # Compile test classes only
 ```
 
 ## Code Style Guidelines
@@ -17,7 +18,8 @@
 - **Test Methods**: camelCase with descriptive names, use `@DisplayName` for clarity
 - **Constants**: `UPPER_SNAKE_CASE` (e.g., `BIRTH_DATE`)
 - **Imports**: Use static imports for assertions (`import static org.junit.jupiter.api.Assertions.*`)
-- **Test Structure**: Follow Arrange-Act-Assert pattern
+- **Test Structure**: Follow Arrange-Act-Assert pattern with comments
 - **Error Handling**: Validate input parameters, throw `IllegalArgumentException` with descriptive messages
 - **Annotations**: Use Lombok (`@Data`) to reduce boilerplate
 - **Testing**: Use JUnit 5 (Jupiter) and Mockito for mocking
+- **Parameterized Tests**: Use `@ParameterizedTest` with appropriate sources for test data

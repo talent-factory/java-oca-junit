@@ -23,28 +23,15 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-plugins {
-    id 'java'
-}
+package edu;
 
-group = 'edu'
-version = '1.0-SNAPSHOT'
+public class MainPerson {
 
-repositories {
-    mavenCentral()
-}
+    public static void main(String[] args) {
 
-dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation('org.junit.jupiter:junit-jupiter:5.10.0')
+        Person person = new Person();
 
-    implementation('org.projectlombok:lombok:1.18.36')
-    annotationProcessor('org.projectlombok:lombok:1.18.36')
-}
-
-test {
-    useJUnitPlatform()
-    testLogging {
-        events "passed", "skipped", "failed"
+        boolean identisch = person.getFirstName().equals("Johnnnn");
+        System.out.println("Identisch: " + identisch);
     }
 }

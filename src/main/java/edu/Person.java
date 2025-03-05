@@ -25,55 +25,33 @@
 
 package edu;
 
-import java.util.Objects;
+import lombok.Data;
 
-@SuppressWarnings("unused")
+import java.time.LocalDate;
+
+@Data
+@SuppressWarnings("all")
 public class Person {
 
     private String firstName;
     private String lastName;
-    private int age;
+    private LocalDate birthDate;
 
-    // Default constructor
+
+    // Null-Argument Konstruktor
     public Person() {
-        this.firstName = "";
-        this.lastName = "";
-        this.age = 0;
+        this("", "", null);
     }
 
     // Parameterized constructor
-    public Person(String firstName, String lastName, int age) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        setAge(age);  // Using setter for validation
-    }
-
-    // Getters and setters
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public Person(String firstName, String lastName, LocalDate birthDate) {
+        setFirstName(firstName);
+        setLastName(lastName);
+        setBirthDate(birthDate);// Using setter for validation
     }
 
     public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        if (age < 0) {
-            throw new IllegalArgumentException("Age cannot be negative");
-        }
-        this.age = age;
+        return LocalDate.now().getYear() - birthDate.getYear();
     }
 
     // Return full name
@@ -83,26 +61,13 @@ public class Person {
 
     // Is the person an adult?
     public boolean isAdult() {
-        return age >= 18;
+        return getAge() >= 18;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-
-        Person person = (Person) obj;
-
-        if (age != person.age) return false;
-        if (!Objects.equals(firstName, person.firstName)) return false;
-        return Objects.equals(lastName, person.lastName);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = firstName != null ? firstName.hashCode() : 0;
-        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-        result = 31 * result + age;
-        return result;
+    public void setBirthDate(LocalDate birthDate) {
+        if (birthDate == null || birthDate.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Birth date must be in the past");
+        }
+        this.birthDate = birthDate;
     }
 }

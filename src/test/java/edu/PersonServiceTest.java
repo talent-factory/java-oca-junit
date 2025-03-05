@@ -82,9 +82,7 @@ public class PersonServiceTest {
     @Test
     public void testSaveNullPerson_ThrowsException() {
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
-            service.savePerson(null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> service.savePerson(null));
 
         // Verify repository was never called
         verify(repository, never()).save(any());

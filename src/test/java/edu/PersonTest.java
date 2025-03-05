@@ -25,7 +25,6 @@
 
 package edu;
 
-import jdk.jfr.Description;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -79,9 +78,7 @@ class PersonTest {
     @Test
     @DisplayName("setBirthDate(null)")
     void whenExceptionThrown_thenAssertionSucceeds() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            person.setBirthDate(null);
-        });
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> person.setBirthDate(null));
 
         String expectedMessage = "Birth date must be in the past";
         String actualMessage = exception.getMessage();

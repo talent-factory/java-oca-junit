@@ -25,13 +25,34 @@
 
 package edu;
 
-public class MainPerson {
+public class PersonService {
 
-    public static void main(String[] args) {
+    private final PersonRepository repository;
 
-        Person person = new Person();
-
-        boolean identisch = person.getFirstName().equals("Johnnnn");
-        System.out.println("Identisch: " + identisch);
+    public PersonService(PersonRepository repository) {
+        this.repository = repository;
     }
+
+    public Person findByFullName(String fullName) {
+        return repository.findByFullName(fullName);
+    }
+
+    public void savePerson(Person person) {
+        if (person == null) {
+            throw new IllegalArgumentException("Person cannot be null");
+        }
+
+        repository.save(person);
+    }
+
+    public boolean isPersonEligibleForDiscount(String fullName) {
+        Person person = repository.findByFullName(fullName);
+        if (person == null) {
+            return false;
+        }
+
+        // People under 18 or over 65 get a discount
+        return person.getAge() < 18 || person.getAge() >= 65;
+    }
+
 }

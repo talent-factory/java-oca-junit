@@ -23,39 +23,17 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-plugins {
-    id 'java'
-}
+package edu;
 
-group = 'edu'
-version = '1.0-SNAPSHOT'
+import org.junit.platform.suite.api.SelectClasses;
+import org.junit.platform.suite.api.Suite;
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    annotationProcessor('org.projectlombok:lombok:1.18.36')
-
-    implementation('org.projectlombok:lombok:1.18.36')
-
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
-    testImplementation 'org.junit.platform:junit-platform-suite-api:1.10.2'
-    testImplementation 'org.junit.platform:junit-platform-suite-engine:1.10.2'
-    testImplementation 'org.junit.platform:junit-platform-suite:1.10.2'  // Neu hinzugefügt
-
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-
-    testImplementation('org.junit.jupiter:junit-jupiter-api:5.10.0')
-    testImplementation('org.junit.jupiter:junit-jupiter-engine:5.10.0')
-    testImplementation('org.junit.jupiter:junit-jupiter:5.10.0')
-    testImplementation('org.junit.platform:junit-platform-suite-api:5.10.0')
-    testImplementation('org.mockito:mockito-junit-jupiter:5.16.0')
-}
-
-test {
-    useJUnitPlatform()
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
+@Suite
+@SelectClasses({
+        PersonTest.class,
+        PersonLifecycleTest.class,
+        PersonParameterizedTest.class
+})
+public class PersonTestSuite {
+    // This class remains empty - it's just used as a holder for the @Suite annotation
 }

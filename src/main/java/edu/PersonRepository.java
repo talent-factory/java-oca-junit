@@ -23,39 +23,11 @@
  * OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-plugins {
-    id 'java'
-}
+package edu;
 
-group = 'edu'
-version = '1.0-SNAPSHOT'
+public interface PersonRepository {
 
-repositories {
-    mavenCentral()
-}
+    Person findByFullName(String fullName);
+    void save(Person person);
 
-dependencies {
-    annotationProcessor('org.projectlombok:lombok:1.18.36')
-
-    implementation('org.projectlombok:lombok:1.18.36')
-
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
-    testImplementation 'org.junit.platform:junit-platform-suite-api:1.10.2'
-    testImplementation 'org.junit.platform:junit-platform-suite-engine:1.10.2'
-    testImplementation 'org.junit.platform:junit-platform-suite:1.10.2'  // Neu hinzugefügt
-
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-
-    testImplementation('org.junit.jupiter:junit-jupiter-api:5.10.0')
-    testImplementation('org.junit.jupiter:junit-jupiter-engine:5.10.0')
-    testImplementation('org.junit.jupiter:junit-jupiter:5.10.0')
-    testImplementation('org.junit.platform:junit-platform-suite-api:5.10.0')
-    testImplementation('org.mockito:mockito-junit-jupiter:5.16.0')
-}
-
-test {
-    useJUnitPlatform()
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
 }

@@ -36,16 +36,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PersonTest {
 
-    public static final int AGE = 25;
-    // Dies ist das zu testende Objekt
+    private static final int AGE = 25;
+    private static final LocalDate BIRTH_DATE = LocalDate.of(
+            LocalDate.now().getYear() - AGE, 1, 1);
+
     private Person person;
 
     @BeforeEach
     void setUp() {
-
-        // Neues Objekt instanziieren und Werte zuweisen via Konstruktor.
-        int year = LocalDate.now().getYear() - AGE;
-        person = new Person("John", "Doe", LocalDate.of(year, 1, 1));
+        person = new Person("John", "Doe", BIRTH_DATE);
     }
 
     @Test

@@ -25,47 +25,109 @@
 
 package edu;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.NonNull;
 
 import java.time.LocalDate;
+import java.time.Period;
+import java.util.Objects;
 
+/**
+ * Represents a person with basic demographic information.
+ * Uses Lombok annotations to reduce boilerplate code.
+ */
 @Data
-@SuppressWarnings("all")
+@Builder
 public class Person {
 
+    @NonNull
     private String firstName;
+    
+    @NonNull
     private String lastName;
+    
     private LocalDate birthDate;
 
-
-    // Null-Argument Konstruktor
+    /**
+     * Default constructor that initializes a person with empty name and null birthdate
+     */
     public Person() {
         this("", "", null);
     }
 
-    // Parameterized constructor
+    /**
+     * Parameterized constructor with validation
+     * 
+     * @param firstName the person's first name
+     * @param lastName the person's last name
+     * @param birthDate the person's birth date
+     */
     public Person(String firstName, String lastName, LocalDate birthDate) {
         setFirstName(firstName);
         setLastName(lastName);
-        setBirthDate(birthDate);// Using setter for validation
+        setBirthDate(birthDate);
     }
 
+    /**
+     * Calculates the person's age based on their birth date
+     * 
+     * @return the person's age in years
+     * @throws IllegalStateException if birth date is not set
+     */
     public int getAge() {
-        return LocalDate.now().getYear() - birthDate.getYear();
+        if (birthDate == null) {
+            throw new IllegalStateException("Birth date not set");
+        }
+        return Period.between(birthDate, LocalDate.now()).getYears();
     }
 
-    // Return full name
+    /**
+     * Returns the person's full name (first name + last name)
+     * 
+     * @return combined first and last name
+     */
     public String getFullName() {
         return firstName + " " + lastName;
     }
 
-    // Is the person an adult?
+    /**
+     * Determines if the person is 18 years or older
+     * 
+     * @return true if the person is an adult (18+), false otherwise
+     */
     public boolean isAdult() {
         return getAge() >= 18;
     }
 
+    /**
+     * Sets the first name with validation
+     * 
+     * @param firstName the person's first name
+     * @throws IllegalArgumentException if firstName is null
+     */
+    public void setFirstName(String firstName) {
+        this.firstName = Objects.requireNonNull(firstName, "First name cannot be null");
+    }
+
+    /**
+     * Sets the last name with validation
+     * 
+     * @param lastName the person's last name
+     * @throws IllegalArgumentException if lastName is null
+     */
+    public void setLastName(String lastName) {
+        this.lastName = Objects.requireNonNull(lastName, "Last name cannot be null");
+    }
+
+    /**
+     * Sets the birth date with validation
+     * 
+     * @param birthDate the person's birth date
+     * @throws IllegalArgumentException if birthDate is null or in the future
+     */
     public void setBirthDate(LocalDate birthDate) {
-        if (birthDate == null || birthDate.isAfter(LocalDate.now())) {
+        if (birthDate != null && birthDate.isAfter(LocalDate.now())) {
             throw new IllegalArgumentException("Birth date must be in the past");
         }
         this.birthDate = birthDate;

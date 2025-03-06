@@ -25,9 +25,50 @@
 
 package edu;
 
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Repository interface for Person data access.
+ * Provides methods to find and store Person objects.
+ */
 public interface PersonRepository {
 
+    /**
+     * Finds a person by their full name
+     * 
+     * @param fullName the full name to search for
+     * @return the found Person or null if not found
+     */
     Person findByFullName(String fullName);
+    
+    /**
+     * Saves a person to the repository
+     * 
+     * @param person the person to save
+     * @throws IllegalArgumentException if person is null
+     */
     void save(Person person);
-
+    
+    /**
+     * Finds a person by their ID
+     * 
+     * @param id the ID to search for
+     * @return an Optional containing the person if found, or empty Optional if not found
+     */
+    Optional<Person> findById(Long id);
+    
+    /**
+     * Retrieves all persons from the repository
+     * 
+     * @return a list of all persons in the repository
+     */
+    List<Person> findAll();
+    
+    /**
+     * Deletes a person from the repository
+     * 
+     * @param person the person to delete
+     */
+    void delete(Person person);
 }

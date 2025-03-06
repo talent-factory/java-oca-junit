@@ -28,11 +28,16 @@ package edu;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 
+/**
+ * Test suite that runs all person-related tests.
+ * Uses JUnit 5 Suite annotations to group tests.
+ */
 @Suite
 @SelectClasses({
         PersonTest.class,
         PersonLifecycleTest.class,
-        PersonParameterizedTest.class
+        PersonParameterizedTest.class,
+        PersonServiceTest.class
 })
 public class PersonTestSuite {
     // This class remains empty - it's just used as a holder for the @Suite annotation

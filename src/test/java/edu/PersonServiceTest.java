@@ -82,7 +82,10 @@ public class PersonServiceTest {
     @Test
     public void testSaveNullPerson_ThrowsException() {
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> service.savePerson(null));
+        Exception exception = assertThrows(NullPointerException.class, 
+                () -> service.savePerson(null));
+                
+        assertEquals("Person cannot be null", exception.getMessage());
 
         // Verify repository was never called
         verify(repository, never()).save(any());

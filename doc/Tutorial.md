@@ -701,9 +701,10 @@ Abschließend einige Best Practices für JUnit 5-Tests:
 ### Test-Organisation
 
 - Ein Test sollte idealerweise nur einen Aspekt des Verhaltens testen
-- Gruppieren Sie verwandte Tests in einer Testklasse
+- Gruppieren Sie verwandte Tests in einer Testklasse oder verwenden Sie `@Nested`-Klassen zur Strukturierung
 - Verwenden Sie Test-Suites für eine bessere Organisation
 - Verwenden Sie das Arrange-Act-Assert-Muster mit Kommentaren zur besseren Lesbarkeit
+- Extrahieren Sie gemeinsame Testkonstanten in separate Utility-Klassen
 
 ### Testmethodik
 
@@ -714,14 +715,17 @@ Abschließend einige Best Practices für JUnit 5-Tests:
 - Testen Sie Randfälle und extreme Werte
 - Testen Sie sowohl den glücklichen Pfad als auch Fehlerfälle
 - Verwenden Sie statische Imports für Assertions (`import static org.junit.jupiter.api.Assertions.*`)
+- Nutzen Sie `assertAll()` für mehrere zusammenhängende Assertions
+- Verwenden Sie `TestInfo` und andere Parameter für Zugriff auf Testmetadaten
 
 ### Wartbarkeit
 
 - Halten Sie Tests einfach und lesbar
 - Vermeiden Sie komplexe Logik in Tests
-- Verwenden Sie Hilfsmethoden für sich wiederholende Einrichtungscode
+- Verwenden Sie Hilfsmethoden und Builder-Pattern für Testdateneinrichtung
 - Fügen Sie aussagekräftige Fehlermeldungen zu Assertions hinzu
-- Nutzen Sie Lombok-Annotationen wie `@Data` zur Reduktion von Boilerplate-Code
+- Nutzen Sie Lombok-Annotationen wie `@Data` und `@Builder` zur Reduktion von Boilerplate-Code
+- Stellen Sie sicher, dass Tests voneinander unabhängig sind und in beliebiger Reihenfolge ausgeführt werden können
 
 ## Zusammenfassung
 

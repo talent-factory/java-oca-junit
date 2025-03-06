@@ -25,34 +25,66 @@
 
 package edu;
 
+import java.util.Objects;
+
+/**
+ * Service class for Person-related operations.
+ * Provides methods to find, save, and check eligibility of persons.
+ */
 public class PersonService {
+
+    /** Minimum age for senior discount */
+    public static final int SENIOR_AGE = 65;
+    
+    /** Maximum age for youth discount */
+    public static final int YOUTH_AGE = 18;
 
     private final PersonRepository repository;
 
+    /**
+     * Constructs a PersonService with the specified repository
+     * 
+     * @param repository the repository to use for person data access
+     * @throws IllegalArgumentException if repository is null
+     */
     public PersonService(PersonRepository repository) {
-        this.repository = repository;
+        this.repository = Objects.requireNonNull(repository, "Repository cannot be null");
     }
 
+    /**
+     * Finds a person by their full name
+     * 
+     * @param fullName the full name to search for
+     * @return the found Person or null if not found
+     */
     public Person findByFullName(String fullName) {
         return repository.findByFullName(fullName);
     }
 
+    /**
+     * Saves a person to the repository
+     * 
+     * @param person the person to save
+     * @throws IllegalArgumentException if person is null
+     */
     public void savePerson(Person person) {
-        if (person == null) {
-            throw new IllegalArgumentException("Person cannot be null");
-        }
-
+        Objects.requireNonNull(person, "Person cannot be null");
         repository.save(person);
     }
 
+    /**
+     * Checks if a person is eligible for age-based discount
+     * People under 18 or over 65 get a discount
+     * 
+     * @param fullName the full name of the person to check
+     * @return true if eligible for discount, false otherwise
+     */
     public boolean isPersonEligibleForDiscount(String fullName) {
         Person person = repository.findByFullName(fullName);
         if (person == null) {
             return false;
         }
 
-        // People under 18 or over 65 get a discount
-        return person.getAge() < 18 || person.getAge() >= 65;
+        return person.getAge() < YOUTH_AGE || person.getAge() >= SENIOR_AGE;
     }
-
 }

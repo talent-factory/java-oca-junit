@@ -39,10 +39,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class PersonServiceTest {
 
-    private static final int AGE = 25;
-    private static final LocalDate BIRTH_DATE = LocalDate.of(
-            LocalDate.now().getYear() - AGE, 1, 1);
-
     @Mock
     private PersonRepository repository;
 
@@ -56,7 +52,7 @@ public class PersonServiceTest {
     @Test
     public void testFindByFullName() {
         // Arrange
-        Person expectedPerson = new Person("John", "Doe", BIRTH_DATE);
+        Person expectedPerson = TestConstants.createTestPerson();
         when(repository.findByFullName("John Doe")).thenReturn(expectedPerson);
 
         // Act
@@ -70,7 +66,7 @@ public class PersonServiceTest {
     @Test
     public void testSavePerson() {
         // Arrange
-        Person person = new Person("John", "Doe", BIRTH_DATE);
+        Person person = TestConstants.createTestPerson();
 
         // Act
         service.savePerson(person);
@@ -94,9 +90,7 @@ public class PersonServiceTest {
     @Test
     public void testIsPersonEligibleForDiscount_Young() {
         // Arrange - person under 18
-        LocalDate birthDate = LocalDate.of(
-                LocalDate.now().getYear() - 15, 1, 1);
-        Person youngPerson = new Person("Young", "Person", birthDate);
+        Person youngPerson = TestConstants.createYouthPerson();
         when(repository.findByFullName("Young Person")).thenReturn(youngPerson);
 
         // Act
@@ -124,9 +118,7 @@ public class PersonServiceTest {
     @Test
     public void testIsPersonEligibleForDiscount_Senior() {
         // Arrange - person over 65
-        LocalDate birthDate = LocalDate.of(
-                LocalDate.now().getYear() - 70, 1, 1);
-        Person seniorPerson = new Person("Senior", "Person", birthDate);
+        Person seniorPerson = TestConstants.createSeniorPerson();
         when(repository.findByFullName("Senior Person")).thenReturn(seniorPerson);
 
         // Act

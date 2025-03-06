@@ -38,10 +38,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PersonParameterizedTest {
 
-    private static final int AGE = 25;
-    private static final LocalDate BIRTH_DATE = LocalDate.of(
-            LocalDate.now().getYear() - AGE, 1, 1);
-
     // Method source for the parameterized test
     private static Stream<Arguments> createTestPersonsAndAges() {
         return Stream.of(
@@ -75,7 +71,7 @@ public class PersonParameterizedTest {
             "Bob,Johnson,Bob Johnson"
     })
     public void testFullName(String firstName, String lastName, String expectedFullName) {
-        Person person = new Person("Test", "Person", BIRTH_DATE);
+        Person person = new Person("Test", "Person", TestConstants.BIRTH_DATE);
         person.setFirstName(firstName);
         person.setLastName(lastName);
 

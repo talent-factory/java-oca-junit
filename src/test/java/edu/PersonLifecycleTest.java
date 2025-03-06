@@ -33,9 +33,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PersonLifecycleTest {
 
-    private static final int AGE = 25;
-    private static final LocalDate BIRTH_DATE = LocalDate.of(
-            LocalDate.now().getYear() - AGE, 1, 1);
     private static int testCount = 0;
     private Person person;
 
@@ -53,7 +50,7 @@ public class PersonLifecycleTest {
 
     @BeforeEach
     public void setup() {
-        person = new Person("John", "Doe", BIRTH_DATE);
+        person = TestConstants.createTestPerson();
         testCount++;
         System.out.println("Running test #" + testCount);
     }
@@ -70,8 +67,8 @@ public class PersonLifecycleTest {
 
     @Test
     public void testEquals() {
-        Person samePerson = new Person("John", "Doe", BIRTH_DATE);
-        Person differentPerson = new Person("Jane", "Doe", BIRTH_DATE);
+        Person samePerson = TestConstants.createTestPerson();
+        Person differentPerson = new Person("Jane", "Doe", TestConstants.BIRTH_DATE);
 
         assertEquals(person, samePerson);
         assertNotEquals(person, differentPerson);

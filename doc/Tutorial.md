@@ -42,58 +42,34 @@ Unit-Tests bieten zahlreiche Vorteile für die Softwareentwicklung:
 Unsere Beispielanwendung dreht sich um eine einfache `Person`-Klasse mit folgenden Eigenschaften:
 
 - Vor- und Nachname
-- Alter
+- Geburtsdatum
+- Methoden zur Berechnung des Alters
 - Methoden zur Prüfung, ob die Person volljährig ist
 - Eine Methode, die den vollständigen Namen zurückgibt
 
 Hier ist die Implementation:
 
 ```java
+@Data
 public class Person {
     private String firstName;
     private String lastName;
-    private int age;
-    
+    private LocalDate birthDate;
+
     // Default constructor
     public Person() {
-        this.firstName = "";
-        this.lastName = "";
-        this.age = 0;
+        this("", "", null);
     }
     
     // Parameterized constructor
-    public Person(String firstName, String lastName, int age) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        setAge(age);  // Using setter for validation
-    }
-    
-    // Getters and setters
-    public String getFirstName() {
-        return firstName;
-    }
-    
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-    
-    public String getLastName() {
-        return lastName;
-    }
-    
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public Person(String firstName, String lastName, LocalDate birthDate) {
+        setFirstName(firstName);
+        setLastName(lastName);
+        setBirthDate(birthDate);  // Using setter for validation
     }
     
     public int getAge() {
-        return age;
-    }
-    
-    public void setAge(int age) {
-        if (age < 0) {
-            throw new IllegalArgumentException("Age cannot be negative");
-        }
-        this.age = age;
+        return LocalDate.now().getYear() - birthDate.getYear();
     }
     
     // Return full name
@@ -103,27 +79,14 @@ public class Person {
     
     // Is the person an adult?
     public boolean isAdult() {
-        return age >= 18;
+        return getAge() >= 18;
     }
     
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        
-        Person person = (Person) obj;
-        
-        if (age != person.age) return false;
-        if (firstName != null ? !firstName.equals(person.firstName) : person.firstName != null) return false;
-        return lastName != null ? lastName.equals(person.lastName) : person.lastName == null;
-    }
-    
-    @Override
-    public int hashCode() {
-        int result = firstName != null ? firstName.hashCode() : 0;
-        result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
-        result = 31 * result + age;
-        return result;
+    public void setBirthDate(LocalDate birthDate) {
+        if (birthDate == null || birthDate.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("Birth date must be in the past");
+        }
+        this.birthDate = birthDate;
     }
 }
 ```
@@ -137,29 +100,28 @@ plugins {
     id 'java'
 }
 
-group = 'com.example'
+group = 'edu'
 version = '1.0-SNAPSHOT'
-sourceCompatibility = '11'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    // JUnit Jupiter API for writing tests
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    annotationProcessor('org.projectlombok:lombok:1.18.36')
+    implementation('org.projectlombok:lombok:1.18.36')
+
+    // JUnit Jupiter dependencies
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.11.4'
     
-    // JUnit Jupiter Engine for running tests
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    
-    // JUnit Jupiter Parameterized Tests
-    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
+    // JUnit Platform dependencies for suite support
+    testImplementation 'org.junit.platform:junit-platform-suite-api:1.11.4'
+    testImplementation 'org.junit.platform:junit-platform-suite-engine:1.11.4'
     
     // Mockito for mocking in tests
-    testImplementation 'org.mockito:mockito-core:4.5.1'
-    
-    // Mockito JUnit Jupiter integration
-    testImplementation 'org.mockito:mockito-junit-jupiter:4.5.1'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.16.0'
 }
 
 test {
@@ -170,7 +132,7 @@ test {
 }
 ```
 
-Diese Konfiguration fügt die benötigten JUnit 5 Jupiter-Komponenten sowie Mockito für Mocking-Tests hinzu.
+Diese Konfiguration fügt die benötigten JUnit 5 Jupiter-Komponenten, Lombok für Boilerplate-Reduktion sowie Mockito für Mocking-Tests hinzu.
 
 ## 3. Erste Tests schreiben
 
@@ -190,11 +152,13 @@ public class PersonTest {
 
     @Test
     public void testDefaultConstructor() {
+        // Arrange
         Person person = new Person();
         
+        // Assert
         assertEquals("", person.getFirstName());
         assertEquals("", person.getLastName());
-        assertEquals(0, person.getAge());
+        assertThrows(IllegalArgumentException.class, () -> person.getBirthDate());
     }
 }
 ```
@@ -206,35 +170,39 @@ Erweitern wir unsere Tests, um den parametrisierten Konstruktor und einige Gette
 ```java
 @Test
 public void testParameterizedConstructor() {
-    Person person = new Person("John", "Doe", 25);
+    // Arrange
+    LocalDate birthDate = LocalDate.of(1990, 1, 1);
+    Person person = new Person("John", "Doe", birthDate);
     
+    // Assert
     assertEquals("John", person.getFirstName());
     assertEquals("Doe", person.getLastName());
-    assertEquals(25, person.getAge());
+    assertEquals(birthDate, person.getBirthDate());
 }
 
 @Test
 public void testSetFirstName() {
+    // Arrange
     Person person = new Person();
+    
+    // Act
     person.setFirstName("Alice");
     
+    // Assert
     assertEquals("Alice", person.getFirstName());
 }
 
 @Test
-public void testSetLastName() {
+public void testSetBirthDate() {
+    // Arrange
     Person person = new Person();
-    person.setLastName("Smith");
+    LocalDate birthDate = LocalDate.of(1990, 1, 1);
     
-    assertEquals("Smith", person.getLastName());
-}
-
-@Test
-public void testSetAge() {
-    Person person = new Person();
-    person.setAge(30);
+    // Act
+    person.setBirthDate(birthDate);
     
-    assertEquals(30, person.getAge());
+    // Assert
+    assertEquals(birthDate, person.getBirthDate());
 }
 ```
 
@@ -257,29 +225,44 @@ Testen wir die `getFullName()`- und `isAdult()`-Methoden unserer `Person`-Klasse
 ```java
 @Test
 public void testGetFullName() {
-    Person person = new Person("John", "Doe", 25);
+    // Arrange
+    LocalDate birthDate = LocalDate.of(1990, 1, 1);
+    Person person = new Person("John", "Doe", birthDate);
     
-    assertEquals("John Doe", person.getFullName());
+    // Act
+    String fullName = person.getFullName();
+    
+    // Assert
+    assertEquals("John Doe", fullName);
 }
 
 @Test
 public void testIsAdult_WhenAdult() {
-    Person person = new Person("John", "Doe", 25);
+    // Arrange
+    LocalDate adultBirthDate = LocalDate.now().minusYears(25);
+    Person person = new Person("John", "Doe", adultBirthDate);
     
+    // Act & Assert
     assertTrue(person.isAdult());
 }
 
 @Test
 public void testIsAdult_WhenNotAdult() {
-    Person person = new Person("John", "Doe", 16);
+    // Arrange
+    LocalDate childBirthDate = LocalDate.now().minusYears(16);
+    Person person = new Person("John", "Doe", childBirthDate);
     
+    // Act & Assert
     assertFalse(person.isAdult());
 }
 
 @Test
 public void testIsAdult_WhenExactlyEighteen() {
-    Person person = new Person("John", "Doe", 18);
+    // Arrange
+    LocalDate eighteenBirthDate = LocalDate.now().minusYears(18);
+    Person person = new Person("John", "Doe", eighteenBirthDate);
     
+    // Act & Assert
     assertTrue(person.isAdult());
 }
 ```
@@ -292,32 +275,39 @@ Diese Tests überprüfen:
 
 Eine wichtige Aufgabe von Tests ist es, sicherzustellen, dass Ihre Anwendung bei ungültigen Eingaben angemessen reagiert, typischerweise durch das Auslösen von Ausnahmen.
 
-### Test für negative Altersangaben
+### Test für ungültige Geburtsdaten
 
-Unsere `Person`-Klasse sollte eine `IllegalArgumentException` werfen, wenn wir versuchen, ein negatives Alter zu setzen. Lassen Sie uns das testen:
+Unsere `Person`-Klasse sollte eine `IllegalArgumentException` werfen, wenn wir versuchen, ein ungültiges Geburtsdatum zu setzen. Lassen Sie uns das testen:
 
 ```java
 @Test
-public void testSetNegativeAge_ThrowsException() {
+public void testSetFutureBirthDate_ThrowsException() {
+    // Arrange
     Person person = new Person();
+    LocalDate futureBirthDate = LocalDate.now().plusDays(1);
     
+    // Act & Assert
     Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-        person.setAge(-5);
+        person.setBirthDate(futureBirthDate);
     });
     
-    String expectedMessage = "Age cannot be negative";
+    String expectedMessage = "Birth date must be in the past";
     String actualMessage = exception.getMessage();
     
     assertTrue(actualMessage.contains(expectedMessage));
 }
 
 @Test
-public void testConstructorWithNegativeAge_ThrowsException() {
+public void testConstructorWithFutureBirthDate_ThrowsException() {
+    // Arrange
+    LocalDate futureBirthDate = LocalDate.now().plusDays(1);
+    
+    // Act & Assert
     Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-        new Person("John", "Doe", -1);
+        new Person("John", "Doe", futureBirthDate);
     });
     
-    String expectedMessage = "Age cannot be negative";
+    String expectedMessage = "Birth date must be in the past";
     String actualMessage = exception.getMessage();
     
     assertTrue(actualMessage.contains(expectedMessage));
@@ -327,7 +317,7 @@ public void testConstructorWithNegativeAge_ThrowsException() {
 In diesen Tests:
 1. Verwenden wir `assertThrows`, um zu überprüfen, dass der richtige Ausnahmetyp geworfen wird
 2. Fangen wir die geworfene Ausnahme ein und überprüfen ihre Nachricht
-3. Testen sowohl den direkten Aufruf von `setAge()` als auch den parametrisierten Konstruktor
+3. Testen sowohl den direkten Aufruf von `setBirthDate()` als auch den parametrisierten Konstruktor
 
 ## 6. Test-Lebenszyklus mit Annotations
 
@@ -350,6 +340,7 @@ public class PersonLifecycleTest {
 
     private Person person;
     private static int testCount = 0;
+    private static final LocalDate BIRTH_DATE = LocalDate.of(1990, 1, 1);
 
     @BeforeAll
     public static void setupAll() {
@@ -359,7 +350,7 @@ public class PersonLifecycleTest {
 
     @BeforeEach
     public void setup() {
-        person = new Person("John", "Doe", 25);
+        person = new Person("John", "Doe", BIRTH_DATE);
         testCount++;
         System.out.println("Running test #" + testCount);
     }
@@ -376,8 +367,8 @@ public class PersonLifecycleTest {
 
     @Test
     public void testEquals() {
-        Person samePerson = new Person("John", "Doe", 25);
-        Person differentPerson = new Person("Jane", "Doe", 25);
+        Person samePerson = new Person("John", "Doe", BIRTH_DATE);
+        Person differentPerson = new Person("Jane", "Doe", BIRTH_DATE);
         
         assertEquals(person, samePerson);
         assertNotEquals(person, differentPerson);
@@ -424,6 +415,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.Arguments;
 
+import java.time.LocalDate;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -432,15 +424,23 @@ public class PersonParameterizedTest {
 
     @ParameterizedTest
     @ValueSource(ints = {18, 21, 30, 65, 100})
-    public void testIsAdult_WhenAdult(int age) {
-        Person person = new Person("Test", "Person", age);
+    public void testIsAdult_WhenAdult(int yearsAgo) {
+        // Arrange
+        LocalDate birthDate = LocalDate.now().minusYears(yearsAgo);
+        Person person = new Person("Test", "Person", birthDate);
+        
+        // Act & Assert
         assertTrue(person.isAdult());
     }
 
     @ParameterizedTest
     @ValueSource(ints = {0, 1, 10, 15, 17})
-    public void testIsAdult_WhenNotAdult(int age) {
-        Person person = new Person("Test", "Person", age);
+    public void testIsAdult_WhenNotAdult(int yearsAgo) {
+        // Arrange
+        LocalDate birthDate = LocalDate.now().minusYears(yearsAgo);
+        Person person = new Person("Test", "Person", birthDate);
+        
+        // Act & Assert
         assertFalse(person.isAdult());
     }
 }
@@ -458,31 +458,38 @@ public class PersonParameterizedTest {
     "John,,John "
 })
 public void testFullName(String firstName, String lastName, String expectedFullName) {
-    Person person = new Person();
+    // Arrange
+    LocalDate birthDate = LocalDate.of(1990, 1, 1);
+    Person person = new Person("", "", birthDate);
+    
+    // Act
     if (firstName != null) person.setFirstName(firstName);
     if (lastName != null) person.setLastName(lastName);
     
+    // Assert
     assertEquals(expectedFullName, person.getFullName());
 }
 
 @ParameterizedTest
-@MethodSource("createTestPersonsAndAges")
-public void testPersonAgeCombinations(String firstName, String lastName, int age, boolean shouldBeAdult) {
-    Person person = new Person(firstName, lastName, age);
+@MethodSource("createTestPersonsData")
+public void testPersonCombinations(String firstName, String lastName, LocalDate birthDate, boolean shouldBeAdult) {
+    // Arrange
+    Person person = new Person(firstName, lastName, birthDate);
     
+    // Assert
     assertEquals(firstName, person.getFirstName());
     assertEquals(lastName, person.getLastName());
-    assertEquals(age, person.getAge());
+    assertEquals(birthDate, person.getBirthDate());
     assertEquals(shouldBeAdult, person.isAdult());
 }
 
 // Method source for the parameterized test
-private static Stream<Arguments> createTestPersonsAndAges() {
+private static Stream<Arguments> createTestPersonsData() {
     return Stream.of(
-        Arguments.of("John", "Doe", 25, true),
-        Arguments.of("Jane", "Smith", 17, false),
-        Arguments.of("Bob", "Johnson", 18, true),
-        Arguments.of("Alice", "Brown", 16, false)
+        Arguments.of("John", "Doe", LocalDate.now().minusYears(25), true),
+        Arguments.of("Jane", "Smith", LocalDate.now().minusYears(17), false),
+        Arguments.of("Bob", "Johnson", LocalDate.now().minusYears(18), true),
+        Arguments.of("Alice", "Brown", LocalDate.now().minusYears(16), false)
     );
 }
 ```
@@ -498,7 +505,7 @@ Bei komplexeren Anwendungen müssen wir oft Klassen testen, die von anderen Komp
 
 ### Einführung eines Service und Repository
 
-Fügen wir unserem Projekt eine Service-Schicht hinzu:
+Unser Projekt enthält bereits eine Repository-Schnittstelle und einen Service:
 
 ```java
 public interface PersonRepository {
@@ -507,7 +514,7 @@ public interface PersonRepository {
 }
 
 public class PersonService {
-    private PersonRepository repository;
+    private final PersonRepository repository;
     
     public PersonService(PersonRepository repository) {
         this.repository = repository;
@@ -548,6 +555,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -567,7 +576,8 @@ public class PersonServiceTest {
     @Test
     public void testFindByFullName() {
         // Arrange
-        Person expectedPerson = new Person("John", "Doe", 25);
+        LocalDate birthDate = LocalDate.of(1990, 1, 1);
+        Person expectedPerson = new Person("John", "Doe", birthDate);
         when(repository.findByFullName("John Doe")).thenReturn(expectedPerson);
         
         // Act
@@ -586,7 +596,8 @@ public class PersonServiceTest {
 @Test
 public void testSavePerson() {
     // Arrange
-    Person person = new Person("John", "Doe", 25);
+    LocalDate birthDate = LocalDate.of(1990, 1, 1);
+    Person person = new Person("John", "Doe", birthDate);
     
     // Act
     service.savePerson(person);
@@ -609,11 +620,40 @@ public void testSaveNullPerson_ThrowsException() {
 @Test
 public void testIsPersonEligibleForDiscount_Young() {
     // Arrange - person under 18
-    Person youngPerson = new Person("Young", "Person", 15);
+    LocalDate youngBirthDate = LocalDate.now().minusYears(15);
+    Person youngPerson = new Person("Young", "Person", youngBirthDate);
     when(repository.findByFullName("Young Person")).thenReturn(youngPerson);
     
     // Act
     boolean result = service.isPersonEligibleForDiscount("Young Person");
+    
+    // Assert
+    assertTrue(result);
+}
+
+@Test
+public void testIsPersonEligibleForDiscount_Adult() {
+    // Arrange - adult person (not eligible)
+    LocalDate adultBirthDate = LocalDate.now().minusYears(30);
+    Person adultPerson = new Person("Adult", "Person", adultBirthDate);
+    when(repository.findByFullName("Adult Person")).thenReturn(adultPerson);
+    
+    // Act
+    boolean result = service.isPersonEligibleForDiscount("Adult Person");
+    
+    // Assert
+    assertFalse(result);
+}
+
+@Test
+public void testIsPersonEligibleForDiscount_Senior() {
+    // Arrange - senior person (eligible)
+    LocalDate seniorBirthDate = LocalDate.now().minusYears(70);
+    Person seniorPerson = new Person("Senior", "Person", seniorBirthDate);
+    when(repository.findByFullName("Senior Person")).thenReturn(seniorPerson);
+    
+    // Act
+    boolean result = service.isPersonEligibleForDiscount("Senior Person");
     
     // Assert
     assertTrue(result);
@@ -637,7 +677,8 @@ import org.junit.platform.suite.api.Suite;
 @SelectClasses({
     PersonTest.class,
     PersonLifecycleTest.class,
-    PersonParameterizedTest.class
+    PersonParameterizedTest.class,
+    PersonServiceTest.class
 })
 public class PersonTestSuite {
     // This class remains empty - it's just used as a holder for the @Suite annotation
@@ -655,12 +696,14 @@ Abschließend einige Best Practices für JUnit 5-Tests:
 - Verwenden Sie aussagekräftige Namen für Testmethoden, die beschreiben, was getestet wird
 - Folgen Sie einem Muster wie: `testMethodName_Scenario_ExpectedBehavior`
 - Beispiel: `testIsAdult_WhenAgeIsBelow18_ReturnsFalse`
+- Nutzen Sie `@DisplayName` für noch klarere Testbeschreibungen
 
 ### Test-Organisation
 
 - Ein Test sollte idealerweise nur einen Aspekt des Verhaltens testen
 - Gruppieren Sie verwandte Tests in einer Testklasse
 - Verwenden Sie Test-Suites für eine bessere Organisation
+- Verwenden Sie das Arrange-Act-Assert-Muster mit Kommentaren zur besseren Lesbarkeit
 
 ### Testmethodik
 
@@ -670,6 +713,7 @@ Abschließend einige Best Practices für JUnit 5-Tests:
     - **Assert**: Überprüfen, ob das Ergebnis den Erwartungen entspricht
 - Testen Sie Randfälle und extreme Werte
 - Testen Sie sowohl den glücklichen Pfad als auch Fehlerfälle
+- Verwenden Sie statische Imports für Assertions (`import static org.junit.jupiter.api.Assertions.*`)
 
 ### Wartbarkeit
 
@@ -677,6 +721,7 @@ Abschließend einige Best Practices für JUnit 5-Tests:
 - Vermeiden Sie komplexe Logik in Tests
 - Verwenden Sie Hilfsmethoden für sich wiederholende Einrichtungscode
 - Fügen Sie aussagekräftige Fehlermeldungen zu Assertions hinzu
+- Nutzen Sie Lombok-Annotationen wie `@Data` zur Reduktion von Boilerplate-Code
 
 ## Zusammenfassung
 
